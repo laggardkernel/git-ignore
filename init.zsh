@@ -30,7 +30,16 @@ _gitignore_clean() {
 }
 
 _gitignore_list() {
-  find ${GITIGNORE_CONFS[gitignore]}/templates/* -print | sed -e 's#\.[^/]*$##' -e 's#.*/##' | sort -fu
+  local ng=0, nc=0, IFS=$'\n'
+  local -a templates
+  [[ -o nullglob ]] && ng=1 || setopt nullglob
+  [[ -o nocasematch ]] && nc=1 || setopt nocasematch
+  templates=("${GITIGNORE_CONFS[gitignore]}"/templates/*{.gitignore,.patch,stack})
+  templates=("${templates[@]##*/}"); templates=("${templates[@]%%.*}");
+  templates=("${(u)templates[@]}")
+  <<< "${templates[@]}" sort -fu
+  [[ $ng = 1 ]] || unsetopt nullglob
+  [[ $nc = 1 ]] || unsetopt nocasematch
 }
 
 _gitignore_get() {
