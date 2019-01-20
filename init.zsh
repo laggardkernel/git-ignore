@@ -5,36 +5,38 @@
 #   laggardkernel <laggardkernel@gmail.com>
 #
 
+# Standardized $0 handling
+0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
+
+# Define default confs.
+typeset -gA GITIGNORE_CONFS
+: ${GITIGNORE_CONFS[gitignore]:=${0:h}/gitignore}
+
 _gitignore_warn() { printf "%b[Warn]%b %s\\n" '\e[0;33m' '\e[0m' "$@" >&2; }
 _gitignore_info() { printf "%b[Info]%b %s\\n" '\e[0;32m' '\e[0m' "$@" >&2; }
 
-# git ignore generator
-export FORGIT_GI_REPO=~/.forgit/gi/repos/dvcs/gitignore # https://github.com/dvcs/gitignore.git
-export FORGIT_GI_SRC=$FORGIT_GI_REPO/templates
-
 _gitignore_update() {
-  if [[ -d "$FORGIT_GI_REPO" ]]; then
+  if [[ -d "${GITIGNORE_CONFS[gitignore]}" ]]; then
     _gitignore_info 'Updating gitignore repo...'
-    (cd $FORGIT_GI_REPO && git pull --no-rebase --ff) || return 1
+    (cd ${GITIGNORE_CONFS[gitignore]} && git pull --no-rebase --ff) || return 1
   else
     _gitignore_info 'Initializing gitignore repo...'
-    git clone --depth=1 https://github.com/dvcs/gitignore.git "$FORGIT_GI_REPO"
+    git clone --depth=1 https://github.com/dvcs/gitignore.git "${GITIGNORE_CONFS[gitignore]}"
   fi
 }
 
 _gitignore_clean() {
-  setopt localoptions rmstarsilent
-  [[ -d $FORGIT_GI_REPO ]] && rm -rf $FORGIT_GI_REPO
+  [[ -d ${GITIGNORE_CONFS[gitignore]} ]] && rm -rf ${GITIGNORE_CONFS[gitignore]}
 }
 
 _gitignore_list() {
-  command find $FORGIT_GI_SRC/* -print | sed -e 's#\.[^/]*$##' -e 's#.*/##' | sort -fu
+  find ${GITIGNORE_CONFS[gitignore]}/templates/* -print | sed -e 's#\.[^/]*$##' -e 's#.*/##' | sort -fu
 }
 
 _gitignore_get() {
   local item filename header stack stacks IFS=$'\t\n'
   for item in "$@"; do
-    filename=$(find -L "$FORGIT_GI_SRC" -type f \( -iname "${item}.gitignore" -o -iname "${item}.stack" \) -print -quit)
+    filename=$(find -L "${GITIGNORE_CONFS[gitignore]}/templates" -type f \( -iname "${item}.gitignore" -o -iname "${item}.stack" \) -print -quit)
     if [[ -z "$filename" ]]; then
       _gitignore_warn "No gitignore template found for '$item'." && continue
     elif [[ "$filename" == *.gitignore ]]; then
@@ -48,7 +50,7 @@ _gitignore_get() {
         cat "${filename%.gitignore}.patch"
         echo
       else
-        stacks=($(command find -L "$FORGIT_GI_SRC" -type f -iname "${item}.*.stack" -print))
+        stacks=($(command find -L "${GITIGNORE_CONFS[gitignore]}/templates" -type f -iname "${item}.*.stack" -print))
         [[ ${#stacks[@]} -ne 0 ]] && for stack in "${stacks[@]}"; do
           header="${stack##*/}"
           header="${header%.stack}"
@@ -68,11 +70,11 @@ _gitignore_get() {
 }
 
 gitignore() {
-  [ -d $FORGIT_GI_REPO ] || _gitignore_update
+  [ -d ${GITIGNORE_CONFS[gitignore]} ] || _gitignore_update
   local IFS cmd args options opt cat
   # https://github.com/wfxr/emoji-cli
   hash bat &>/dev/null && cat='bat -l gitignore --color=always --style=numbers,grid,header' || cat="cat"
-  cmd="{ $cat $FORGIT_GI_SRC/{2}{.gitignore,.patch}; $cat $FORGIT_GI_SRC/{2}*.stack } 2>/dev/null"
+  cmd="{ $cat ${GITIGNORE_CONFS[gitignore]}/templates/{2}{.gitignore,.patch}; $cat ${GITIGNORE_CONFS[gitignore]}/templates/{2}*.stack } 2>/dev/null"
   # shellcheck disable=SC2206,2207
   IFS=$'\n' args=($@) && [[ $# -eq 0 ]] && args=($(_gitignore_list | nl -nrn -w4 -s'  ' |
     _gitignore_fzf -m --preview="$cmd" --preview-window="right:70%" | awk '{print $2}'))
