@@ -1,4 +1,7 @@
 #
+# Copyright 2019, laggardkernel and the gitignore contributors
+# SPDX-License-Identifier: MIT
+
 # Generate .gitignore files with templates from gitignore.io
 #
 # Authors:
