@@ -72,8 +72,7 @@ _gitignore_get() {
 gitignore() {
   [ -d ${GITIGNORE_CONFS[gitignore]} ] || _gitignore_update
   local IFS cmd args options opt cat
-  # https://github.com/wfxr/emoji-cli
-  hash bat &>/dev/null && cat='bat -l gitignore --color=always --style=numbers,grid,header' || cat="cat"
+  hash bat &>/dev/null && cat='bat -l gitignore --color=always --style=grid,header,numbers' || cat="cat"
   cmd="{ $cat ${GITIGNORE_CONFS[gitignore]}/templates/{2}{.gitignore,.patch}; $cat ${GITIGNORE_CONFS[gitignore]}/templates/{2}*.stack } 2>/dev/null"
   # shellcheck disable=SC2206,2207
   IFS=$'\n' args=($@) && [[ $# -eq 0 ]] && args=($(_gitignore_list | nl -nrn -w4 -s'  ' |
@@ -87,7 +86,7 @@ gitignore() {
   case "$opt" in
   '(1)')
     if hash bat &>/dev/null; then
-      _gitignore_get ${args[@]} | bat -l gitignore --style=numbers,grid
+      _gitignore_get ${args[@]} | bat -l gitignore --style=grid,header,numbers
     else
       _gitignore_get ${args[@]}
     fi
