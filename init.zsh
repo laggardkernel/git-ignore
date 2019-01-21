@@ -83,34 +83,37 @@ _gitignore_get() {
 
 gitignore() {
   [ -d ${GITIGNORE_CONFS[gitignore]} ] || _gitignore_update
-  local IFS cmd args options opt cat
-  hash bat &>/dev/null && cat='bat -l gitignore --color=always --style=grid,header,numbers' || cat="cat"
-  cmd="{ $cat ${GITIGNORE_CONFS[gitignore]}/templates/{2}{.gitignore,.patch}; $cat ${GITIGNORE_CONFS[gitignore]}/templates/{2}*.stack } 2>/dev/null"
+
+  local IFS preview_cmd args options opt view_cmd paging_opt
+  IFS=$'\n'; args=("$@")
+  [[ $# -eq 0 ]] || paging_opt="--paging=never"
+  hash bat &>/dev/null && view_cmd="bat -l gitignore --color=always --style=grid,header,numbers $paging_opt" || view_cmd="cat"
+  preview_cmd="{ $view_cmd ${GITIGNORE_CONFS[gitignore]}/templates/{2}{.gitignore,.patch}; $view_cmd ${GITIGNORE_CONFS[gitignore]}/templates/{2}*.stack } 2>/dev/null"
   # shellcheck disable=SC2206,2207
-  IFS=$'\n' args=($@) && [[ $# -eq 0 ]] && args=($(_gitignore_list | nl -nrn -w4 -s'  ' |
-    _gitignore_fzf -m --preview="$cmd" --preview-window="right:70%" | awk '{print $2}'))
-  [ ${#args[@]} -eq 0 ] && return 1
-  options=('(1) Output to stdout'
-    '(2) Append to .gitignore'
-    '(3) Overwrite .gitignore')
-  opt=$(printf '%s\n' "${options[@]}" | _gitignore_fzf +m | awk '{print $1}')
-  # shellcheck disable=SC2068
-  case "$opt" in
-  '(1)')
-    if hash bat &>/dev/null; then
-      _gitignore_get ${args[@]} | bat -l gitignore --style=grid,header,numbers
-    else
-      _gitignore_get ${args[@]}
-    fi
-    ;;
-  '(2)')
-    ! [[ -e .gitignore ]] && touch .gitignore
-    _gitignore_get ${args[@]} >>.gitignore
-    ;;
-  '(3)')
-    _gitignore_get ${args[@]} >|.gitignore
-    ;;
-  esac
+  if [[ $# -eq 0 ]]; then
+    args=($(_gitignore_list | nl -nrn -w4 -s'  ' |
+      _gitignore_fzf -m --preview="$preview_cmd" --preview-window="right:70%" | awk '{print $2}'))
+    [ ${#args[@]} -eq 0 ] && return 1
+    options=('(1) Output to stdout'
+             '(2) Append to .gitignore'
+             '(3) Overwrite .gitignore')
+    opt=$(printf '%s\n' "${options[@]}" | _gitignore_fzf +m | awk '{print $1}')
+    # shellcheck disable=SC2068
+    case "$opt" in
+    '(1)')
+        _gitignore_get ${args[@]} | eval "$view_cmd"
+      ;;
+    '(2)')
+      ! [[ -e ./.gitignore ]] && touch ./.gitignore
+      _gitignore_get ${args[@]} >> ./.gitignore
+      ;;
+    '(3)')
+      _gitignore_get ${args[@]} >| ./.gitignore
+      ;;
+    esac
+  else
+    _gitignore_get ${args[@]} | eval "$view_cmd"
+  fi
 }
 
 _gitignore_fzf() {
