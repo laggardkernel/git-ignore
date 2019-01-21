@@ -12,23 +12,23 @@
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 
 # Define default confs.
-typeset -gA GITIGNORE_CONFS
-: ${GITIGNORE_CONFS[gitignore]:=${0:h}/gitignore}
+typeset -gA GITIGNORE_OPTS
+: "${GITIGNORE_OPTS[gitignore]:=${0:h}/gitignore}"
 
 _gitignore_info() { printf "%b[Info]%b %s\\n" '\e[0;32m' '\e[0m' "$@" >&2; }
 
 _gitignore_update() {
-  if [[ -d "${GITIGNORE_CONFS[gitignore]}" ]]; then
+  if [[ -d "${GITIGNORE_OPTS[gitignore]}" ]]; then
     _gitignore_info 'Updating gitignore repo...'
-    (cd ${GITIGNORE_CONFS[gitignore]} && git pull --no-rebase --ff) || return 1
+    (cd "${GITIGNORE_OPTS[gitignore]}" && git pull --no-rebase --ff) || return 1
   else
     _gitignore_info 'Initializing gitignore repo...'
-    git clone --depth=1 https://github.com/dvcs/gitignore.git "${GITIGNORE_CONFS[gitignore]}"
+    git clone --depth=1 https://github.com/dvcs/gitignore.git "${GITIGNORE_OPTS[gitignore]}"
   fi
 }
 
 _gitignore_clean() {
-  [[ -d ${GITIGNORE_CONFS[gitignore]} ]] && rm -rf ${GITIGNORE_CONFS[gitignore]}
+  [[ -d "${GITIGNORE_OPTS[gitignore]}" ]] && rm -rf "${GITIGNORE_OPTS[gitignore]}"
 }
 
 _gitignore_list() {
@@ -53,8 +53,8 @@ _gitignore_get() {
   [[ -o nocasematch ]] && ncg=1 || setopt nocaseglob
 
   for item in "$@"; do
-    for template in "${GITIGNORE_CONFS[gitignore]}"/templates/${item}{.gitignore*,.patch*,*stack}; do
     # Be careful of the trivial case: Code.stack
+    for template in "${GITIGNORE_OPTS[gitignore]}"/templates/${item}{.gitignore*,.patch*,*stack}; do
       if [[ "$template" == *.gitignore ]]; then
         header="${template##*/}"; header="${header%.gitignore}"
         echo "### $header ###"
@@ -79,13 +79,13 @@ _gitignore_get() {
 }
 
 gitignore() {
-  [ -d ${GITIGNORE_CONFS[gitignore]} ] || _gitignore_update
+  [ -d "${GITIGNORE_OPTS[gitignore]}" ] || _gitignore_update
 
   local IFS preview_cmd args options opt view_cmd paging_opt
   IFS=$'\n'
   [[ $# -eq 0 ]] || paging_opt="--paging=never"
   hash bat &>/dev/null && view_cmd="bat -l gitignore --color=always --style=grid,header,numbers $paging_opt" || view_cmd="cat"
-  preview_cmd="{ $view_cmd ${GITIGNORE_CONFS[gitignore]}/templates/{2}{.gitignore,.patch}; $view_cmd ${GITIGNORE_CONFS[gitignore]}/templates/{2}*.stack } 2>/dev/null"
+  preview_cmd="{ $view_cmd ${GITIGNORE_OPTS[gitignore]}/templates/{2}{.gitignore,.patch}; $view_cmd ${GITIGNORE_OPTS[gitignore]}/templates/{2}*.stack } 2>/dev/null"
   # shellcheck disable=SC2206,2207
   if [[ $# -eq 0 ]]; then
     args=($(_gitignore_list | nl -nrn -w4 -s'  ' |
