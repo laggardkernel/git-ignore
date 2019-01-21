@@ -45,12 +45,14 @@ _gitignore_list() {
 }
 
 _gitignore_get() {
-  local header, ng=0, nc=0
+  local header
+  local ng=0, nc=0
   [[ -o nullglob ]] && ng=1 || setopt nullglob
   [[ -o nocasematch ]] && ncg=1 || setopt nocaseglob
 
   for item in "$@"; do
     for template in "${GITIGNORE_CONFS[gitignore]}"/templates/${item}{.gitignore*,.patch*,*stack}; do
+    # Be careful of the trivial case: Code.stack
       if [[ "$template" == *.gitignore ]]; then
         header="${template##*/}"; header="${header%.gitignore}"
         echo "### $header ###"
