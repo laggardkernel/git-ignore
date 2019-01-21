@@ -46,39 +46,33 @@ _gitignore_list() {
 }
 
 _gitignore_get() {
-  local item filename header stack stacks IFS=$'\t\n'
+  local header, ng=0, nc=0
+  [[ -o nullglob ]] && ng=1 || setopt nullglob
+  [[ -o nocasematch ]] && ncg=1 || setopt nocaseglob
+
   for item in "$@"; do
-    filename=$(find -L "${GITIGNORE_CONFS[gitignore]}/templates" -type f \( -iname "${item}.gitignore" -o -iname "${item}.stack" \) -print -quit)
-    if [[ -z "$filename" ]]; then
-      _gitignore_warn "No gitignore template found for '$item'." && continue
-    elif [[ "$filename" == *.gitignore ]]; then
-      header="${filename##*/}"
-      header="${header%.gitignore}"
-      echo "### $header ###"
-      cat "$filename"
-      echo
-      if [[ -e "${filename%.gitignore}.patch" ]]; then
+    for template in "${GITIGNORE_CONFS[gitignore]}"/templates/${item}{.gitignore*,.patch*,*stack}; do
+      if [[ "$template" == *.gitignore ]]; then
+        header="${template##*/}"; header="${header%.gitignore}"
+        echo "### $header ###"
+        cat "$template"
+        echo ""
+      elif [[ "$template" == *.patch ]]; then
+        header="${template##*/}"; header="${header%.patch}"
         echo "### $header Patch ###"
-        cat "${filename%.gitignore}.patch"
-        echo
+        cat "$template"
+        echo ""
       else
-        stacks=($(command find -L "${GITIGNORE_CONFS[gitignore]}/templates" -type f -iname "${item}.*.stack" -print))
-        [[ ${#stacks[@]} -ne 0 ]] && for stack in "${stacks[@]}"; do
-          header="${stack##*/}"
-          header="${header%.stack}"
-          echo "### $header Stack ###"
-          cat "$stack"
-          echo
-        done
+        header="${template##*/}"; header="${header%.stack}"
+        echo "### $header Stack ###"
+        cat "$template"
+        echo ""
       fi
-    else # particularly for Code.stack
-      header="${filename##*/}"
-      header="${header%.stack}"
-      echo "### $header ###"
-      cat "$filename"
-      echo
-    fi
+    done
   done
+
+  [[ $ng = 1 ]] || unsetopt nullglob
+  [[ $ncg = 1 ]] || unsetopt nocaseglob
 }
 
 gitignore() {
