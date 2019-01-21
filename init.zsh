@@ -36,10 +36,12 @@ _gitignore_list() {
   local -a templates
   [[ -o nullglob ]] && ng=1 || setopt nullglob
   [[ -o nocasematch ]] && nc=1 || setopt nocasematch
-  templates=("${GITIGNORE_CONFS[gitignore]}"/templates/*{.gitignore,.patch,stack})
+
+  templates=("${GITIGNORE_OPTS[gitignore]}"/templates/*{.gitignore,.patch,.stack})
   templates=("${templates[@]##*/}"); templates=("${templates[@]%%.*}");
   templates=("${(u)templates[@]}")
   <<< "${templates[@]}" sort -fu
+
   [[ $ng = 1 ]] || unsetopt nullglob
   [[ $nc = 1 ]] || unsetopt nocasematch
 }
