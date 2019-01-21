@@ -85,7 +85,7 @@ gitignore() {
   [ -d ${GITIGNORE_CONFS[gitignore]} ] || _gitignore_update
 
   local IFS preview_cmd args options opt view_cmd paging_opt
-  IFS=$'\n'; args=("$@")
+  IFS=$'\n'
   [[ $# -eq 0 ]] || paging_opt="--paging=never"
   hash bat &>/dev/null && view_cmd="bat -l gitignore --color=always --style=grid,header,numbers $paging_opt" || view_cmd="cat"
   preview_cmd="{ $view_cmd ${GITIGNORE_CONFS[gitignore]}/templates/{2}{.gitignore,.patch}; $view_cmd ${GITIGNORE_CONFS[gitignore]}/templates/{2}*.stack } 2>/dev/null"
@@ -94,6 +94,7 @@ gitignore() {
     args=($(_gitignore_list | nl -nrn -w4 -s'  ' |
       _gitignore_fzf -m --preview="$preview_cmd" --preview-window="right:70%" | awk '{print $2}'))
     [ ${#args[@]} -eq 0 ] && return 1
+
     options=('(1) Output to stdout'
              '(2) Append to .gitignore'
              '(3) Overwrite .gitignore')
@@ -112,7 +113,7 @@ gitignore() {
       ;;
     esac
   else
-    _gitignore_get ${args[@]} | eval "$view_cmd"
+    _gitignore_get "$@" | eval "$view_cmd"
   fi
 }
 
