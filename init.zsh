@@ -15,7 +15,6 @@
 typeset -gA GITIGNORE_CONFS
 : ${GITIGNORE_CONFS[gitignore]:=${0:h}/gitignore}
 
-_gitignore_warn() { printf "%b[Warn]%b %s\\n" '\e[0;33m' '\e[0m' "$@" >&2; }
 _gitignore_info() { printf "%b[Info]%b %s\\n" '\e[0;32m' '\e[0m' "$@" >&2; }
 
 _gitignore_update() {
