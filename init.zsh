@@ -44,7 +44,7 @@ _gitignore_list() {
   local ng=0, nc=0, IFS=$'\n'
   local -a templates
   [[ -o nullglob ]] && ng=1 || setopt nullglob
-  [[ -o nocasematch ]] && nc=1 || setopt nocasematch
+  [[ -o nocasematch ]] && ncm=1 || setopt nocasematch
 
   templates=("${GITIGNORE_OPTS[gitignore]}"/templates/*{.gitignore,.patch,.stack})
   templates=("${templates[@]##*/}"); templates=("${templates[@]%%.*}");
@@ -52,7 +52,7 @@ _gitignore_list() {
   <<< "${templates[@]}" sort -fu
 
   [[ $ng = 1 ]] || unsetopt nullglob
-  [[ $nc = 1 ]] || unsetopt nocasematch
+  [[ $ncm = 1 ]] || unsetopt nocasematch
 }
 
 _gitignore_get() {
@@ -90,29 +90,31 @@ _gitignore_get() {
 gitignore() {
   [ -d "${GITIGNORE_OPTS[gitignore]}" ] || _gitignore_update
 
-  local IFS preview_cmd args options opt
+  local IFS preview_cmd choice
+  local -a args menu
   IFS=$'\n'
   preview_cmd="{ ${GITIGNORE_OPTS[preview_cmd]} ${GITIGNORE_OPTS[gitignore]}/templates/{2}{.gitignore,.patch}; ${GITIGNORE_OPTS[preview_cmd]} ${GITIGNORE_OPTS[gitignore]}/templates/{2}*.stack } 2>/dev/null"
   # shellcheck disable=SC2206,2207
   if [[ $# -eq 0 ]]; then
     args=($(_gitignore_list | nl -nrn -w4 -s'  ' |
-      _gitignore_fzf -m --preview="$preview_cmd" --preview-window="right:70%" | awk '{print $2}'))
-    [[ ${#args[@]} -eq 0 ]] && return 1
+      _gitignore_fzf -m --preview="$preview_cmd" --preview-window="right:70%"))
 
-    options=('1) Output to stdout'
-             '2) Append to .gitignore'
-             '3) Overwrite .gitignore')
-    opt=$(printf '%s\n' "${options[@]}" | _gitignore_fzf +m | awk '{print $1}')
+    [[ ${#args[@]} -eq 0 ]] && return 1 || args=(${args[@]##* })
+
+    menu=('1) Output to stdout'
+          '2) Append to .gitignore'
+          '3) Overwrite .gitignore')
+    choice=$(<<< "${menu[@]}" _gitignore_fzf +m)
     # shellcheck disable=SC2068
-    case "$opt" in
-    '1)')
-        _gitignore_get "${args[@]}" | _gitignore_colorize
+    case "$choice" in
+    1*)
+      _gitignore_get "${args[@]}" | _gitignore_colorize
       ;;
-    '2)')
+    2*)
       [[ -e ./.gitignore ]] || touch ./.gitignore
       _gitignore_get "${args[@]}" >> ./.gitignore
       ;;
-    '3)')
+    3*)
       _gitignore_get "${args[@]}" >| ./.gitignore
       ;;
     esac
