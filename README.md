@@ -16,30 +16,29 @@ ZSH plugin. Generate `.gitignore` with templates from [gitignore.io](https://www
 
 ## Installation
 
-[`fzf`](https://github.com/junegunn/fzf) is not a must, but it's highly recommended to use `git-ignore` with it. There's
-
 ### [Zplugin](https://github.com/zdharma/zplugin)
 
-The only ZSH plugin manager solves the time-consuming init for nvm, nodenv, pyenv, rnv, rbenv, thefuck, fasd, etc, with its amazing async [Turbo Mode](https://github.com/zdharma/zplugin#turbo-mode-zsh--53).
+The only ZSH plugin manager solves the time-consuming init for `nvm`, `nodenv`, `pyenv`, `rvm`, `rbenv`, `thefuck`, `fasd`, etc, with its amazing async [Turbo Mode](https://github.com/zdharma/zplugin#turbo-mode-zsh--53).
 
 ```zsh
+# add it into ur .zshrc
 zplugin light laggardkernel/git-ignore
 ```
 
 Update the plugin with
 
 ```zsh
-zplg update laggardkernel/git-ignore
+$ zplg update laggardkernel/git-ignore
 ```
 
 ### [Prezto](https://github.com/sorin-ionescu/prezto)
 
-The only framework does **optimizations** for plugins with sophisticated coding skill:
-- [refreshing `.zcompdump` every 20h](https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/completion/init.zsh#L31-L41)
-- [compiling bytecode for `.zcompdump` at the background](https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/runcoms/zlogin#L9-L15)
-- [caching init script for fasd](https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/fasd/init.zsh#L22-L36)
-- saving `*env` startup time with [`init - --no-rehash` for `rbenv`, `pyenv`, `nodenv`](https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/python/init.zsh#L22)
-- [removing the horribly time-consuming `brew command` from `command-not-found`](https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/command-not-found/init.zsh)
+The only framework does **optimizations** in plugins with sophisticated coding skill:
+- [Refreshing `.zcompdump` every 20h](https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/completion/init.zsh#L31-L41)
+- [Compiling bytecode for `.zcompdump` in the background](https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/runcoms/zlogin#L9-L15)
+- [Caching init script for fasd](https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/fasd/init.zsh#L22-L36)
+- Saving `*env` startup time with [`init - --no-rehash` for `rbenv`, `pyenv`, `nodenv`](https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/python/init.zsh#L22)
+- [Removing the horribly time-consuming `brew command` from `command-not-found`](https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/command-not-found/init.zsh)
 
 ```zsh
 mkdir -p ${ZDOTDIR:-$HOME}/.zprezto/contrib &>/dev/null
@@ -61,7 +60,7 @@ alias gi="gitignore"
 # with fzf installed
 gi
 
-# or, gi string1 string2
+# or, gi keyword1 keyword2
 gi macos linux windows vim emacs > ./.gitignore
 ```
 
