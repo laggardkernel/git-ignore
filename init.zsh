@@ -14,6 +14,15 @@
 # Define default confs.
 typeset -gA GITIGNORE_OPTS
 : "${GITIGNORE_OPTS[gitignore]:=${0:h}/gitignore}"
+: "${GITIGNORE_OPTS[bat_preview]:="-l gitignore --color=always --style=grid,header,numbers"}"
+
+if (( $+commands[bat] )); then
+  _gitignore_colorize() { bat -l gitignore --style=grid,header,numbers "$@"; }
+  GITIGNORE_OPTS[preview_cmd]="bat ${GITIGNORE_OPTS[bat_preview]}"
+else
+  _gitignore_colorize() { cat "$@"; }
+  GITIGNORE_OPTS[preview_cmd]="cat"
+fi
 
 _gitignore_info() { printf "%b[Info]%b %s\\n" '\e[0;32m' '\e[0m' "$@" >&2; }
 
@@ -81,36 +90,34 @@ _gitignore_get() {
 gitignore() {
   [ -d "${GITIGNORE_OPTS[gitignore]}" ] || _gitignore_update
 
-  local IFS preview_cmd args options opt view_cmd paging_opt
+  local IFS preview_cmd args options opt
   IFS=$'\n'
-  [[ $# -eq 0 ]] || paging_opt="--paging=never"
-  hash bat &>/dev/null && view_cmd="bat -l gitignore --color=always --style=grid,header,numbers $paging_opt" || view_cmd="cat"
-  preview_cmd="{ $view_cmd ${GITIGNORE_OPTS[gitignore]}/templates/{2}{.gitignore,.patch}; $view_cmd ${GITIGNORE_OPTS[gitignore]}/templates/{2}*.stack } 2>/dev/null"
+  preview_cmd="{ ${GITIGNORE_OPTS[preview_cmd]} ${GITIGNORE_OPTS[gitignore]}/templates/{2}{.gitignore,.patch}; ${GITIGNORE_OPTS[preview_cmd]} ${GITIGNORE_OPTS[gitignore]}/templates/{2}*.stack } 2>/dev/null"
   # shellcheck disable=SC2206,2207
   if [[ $# -eq 0 ]]; then
     args=($(_gitignore_list | nl -nrn -w4 -s'  ' |
       _gitignore_fzf -m --preview="$preview_cmd" --preview-window="right:70%" | awk '{print $2}'))
-    [ ${#args[@]} -eq 0 ] && return 1
+    [[ ${#args[@]} -eq 0 ]] && return 1
 
-    options=('(1) Output to stdout'
-             '(2) Append to .gitignore'
-             '(3) Overwrite .gitignore')
+    options=('1) Output to stdout'
+             '2) Append to .gitignore'
+             '3) Overwrite .gitignore')
     opt=$(printf '%s\n' "${options[@]}" | _gitignore_fzf +m | awk '{print $1}')
     # shellcheck disable=SC2068
     case "$opt" in
-    '(1)')
-        _gitignore_get ${args[@]} | eval "$view_cmd"
+    '1)')
+        _gitignore_get "${args[@]}" | _gitignore_colorize
       ;;
-    '(2)')
-      ! [[ -e ./.gitignore ]] && touch ./.gitignore
-      _gitignore_get ${args[@]} >> ./.gitignore
+    '2)')
+      [[ -e ./.gitignore ]] || touch ./.gitignore
+      _gitignore_get "${args[@]}" >> ./.gitignore
       ;;
-    '(3)')
-      _gitignore_get ${args[@]} >| ./.gitignore
+    '3)')
+      _gitignore_get "${args[@]}" >| ./.gitignore
       ;;
     esac
   else
-    _gitignore_get "$@" | eval "$view_cmd"
+    _gitignore_get "$@" | _gitignore_colorize
   fi
 }
 
