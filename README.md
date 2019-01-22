@@ -4,6 +4,8 @@
 
 ZSH plugin. Generate `.gitignore` with templates from [gitignore.io](https://www.gitignore.io/) **offline**, taking the advantage of [`fzf`](https://github.com/junegunn/fzf) fuzzy finder, [`bat`](https://github.com/sharkdp/bat) syntax highlighting and ZSH completion.
 
+![images/preview-01.jpg](../assets/images/preview-01.jpg?raw=true)
+
 ## Feature
 - Use `gitignore` command to generate `.gitignore` files
     - may be changed to `git ignore` later
@@ -70,13 +72,14 @@ gi macos linux windows vim emacs > ./.gitignore
 | <kbd>Enter</kbd>                              | Confirm                 |
 | <kbd>Tab</kbd>                                | Toggle mark             |
 | <kbd>?</kbd>                                  | Toggle preview window   |
-| <kbd>Ctrl</kbd> - <kbd>S</kbd>                | Toggle sort             |
 | <kbd>Ctrl</kbd> - <kbd>R</kbd>                | Toggle selection        |
 | <kbd>Alt</kbd> - <kbd>W</kbd>                 | Toggle preview wrap     |
 | <kbd>Ctrl</kbd> - <kbd>K</kbd> / <kbd>P</kbd> | Selection up            |
 | <kbd>Ctrl</kbd> - <kbd>J</kbd> / <kbd>N</kbd> | Selection down          |
 | <kbd>Alt</kbd> - <kbd>K</kbd> / <kbd>P</kbd>  | Preview up              |
 | <kbd>Alt</kbd> - <kbd>J</kbd> / <kbd>N</kbd>  | Preview down            |
+
+## Credits
 
 ## License
 
