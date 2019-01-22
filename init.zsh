@@ -41,7 +41,7 @@ _gitignore_clean() {
 }
 
 _gitignore_list() {
-  local ng=0, nc=0, IFS=$'\n'
+  local ng=0, ncm=0, IFS=$'\n'
   local -a templates
   [[ -o nullglob ]] && ng=1 || setopt nullglob
   [[ -o nocasematch ]] && ncm=1 || setopt nocasematch
@@ -57,7 +57,7 @@ _gitignore_list() {
 
 _gitignore_get() {
   local header
-  local ng=0, nc=0
+  local ng=0, ncg=0
   [[ -o nullglob ]] && ng=1 || setopt nullglob
   [[ -o nocaseglob ]] && ncg=1 || setopt nocaseglob
 
