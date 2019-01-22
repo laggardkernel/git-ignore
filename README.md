@@ -49,6 +49,10 @@ git clone git@github.com:laggardkernel/git-ignore.git ${ZDOTDIR:-$HOME}/.zprezto
 git clone https://github.com/laggardkernel/git-ignore.git ${ZDOTDIR:-$HOME}/.zprezto/contrib/git-ignore
 ```
 
+### Others
+
+Sorry, I don't care much.
+
 ## Usage
 
 ```zsh
@@ -79,10 +83,21 @@ gi macos linux windows vim emacs > ./.gitignore
 | <kbd>Alt</kbd> - <kbd>K</kbd> / <kbd>P</kbd>  | Preview up              |
 | <kbd>Alt</kbd> - <kbd>J</kbd> / <kbd>N</kbd>  | Preview down            |
 
+## Todo
+
+- [x] Remove unnecessary external dependencies: ~~`sed`, `awk`~~
+- [ ] ZSH completion (half done)
+- [ ] Configure the plugin with `zstyle`
+- [ ] Migrate `gitignore` as sub command `git ignore`
+
 ## Credits
+
+[Git-ignore](https://github.com/laggardkernel) is originally based on [wfxr/forgit](https://github.com/wfxr/forgit). [laggardkernel](https://github.com/laggardkernel) added the feature to generate `.gitignore` files using templates **offline**. Later, this function is separated as [laggardkernel/git-ignore](https://github.com/laggardkernel) because of disagreement on implementation.
 
 ## License
 
 The MIT License (MIT)
 
 Copyright (c) 2019 laggardkernel
+
+Copyright (c) 2019 Wenxuan Zhang
