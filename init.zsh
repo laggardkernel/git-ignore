@@ -50,7 +50,7 @@ _gitignore_get() {
   local header
   local ng=0, nc=0
   [[ -o nullglob ]] && ng=1 || setopt nullglob
-  [[ -o nocasematch ]] && ncg=1 || setopt nocaseglob
+  [[ -o nocaseglob ]] && ncg=1 || setopt nocaseglob
 
   for item in "$@"; do
     # Be careful of the trivial case: Code.stack
