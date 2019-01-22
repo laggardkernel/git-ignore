@@ -96,7 +96,7 @@ gitignore() {
   # shellcheck disable=SC2206,2207
   if [[ $# -eq 0 ]]; then
     args=($(_gitignore_list | nl -nrn -w4 -s'  ' |
-      _gitignore_fzf -m --preview="$preview_cmd" --preview-window="right:70%" |
+      _gitignore_fzf -m --preview="$preview_cmd" |
       cat
     ))
 
@@ -129,12 +129,11 @@ _gitignore_fzf() {
     $FZF_DEFAULT_OPTS
     --ansi
     --height '80%'
+    --preview-window='right:62%'
     --bind='alt-k:preview-up,alt-p:preview-up'
     --bind='alt-j:preview-down,alt-n:preview-down'
     --bind='ctrl-r:toggle-all'
-    --bind='ctrl-s:toggle-sort'
     --bind='?:toggle-preview'
-    --preview-window='right:60%'
     --bind='alt-w:toggle-preview-wrap'
     " fzf "$@"
 }
