@@ -128,3 +128,13 @@ _gitignore_fzf() {
     --bind='alt-w:toggle-preview-wrap'
     " fzf "$@"
 }
+
+_gitignore () {
+  local templates IFS=$'\t\n'
+  # unquote variable expansion on purpose to remove empty lines
+  templates=(${(f)"$(_gitignore_list)"}); templates=("${templates[@]:l}")
+  compset -P '*,'
+  compadd -S '' "${templates[@]}"
+}
+
+compdef _gitignore gitignore
