@@ -1,5 +1,5 @@
 #
-# Copyright 2019, laggardkernel and the gitignore contributors
+# Copyright 2019, laggardkernel and the git-ignore contributors
 # SPDX-License-Identifier: MIT
 
 # Generate .gitignore files with templates from gitignore.io
@@ -13,7 +13,7 @@
 
 # Define default confs.
 typeset -gA GITIGNORE_OPTS
-: "${GITIGNORE_OPTS[gitignore]:=${0:h}/gitignore}"
+: "${GITIGNORE_OPTS[gitignore]:=${0:h}/.git-ignore}"
 : "${GITIGNORE_OPTS[bat_preview]:="-l gitignore --color=always --style=grid,header,numbers"}"
 
 if (( $+commands[bat] )); then
