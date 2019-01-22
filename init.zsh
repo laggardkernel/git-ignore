@@ -90,14 +90,15 @@ _gitignore_get() {
 gitignore() {
   [ -d "${GITIGNORE_OPTS[gitignore]}" ] || _gitignore_update
 
-  local IFS preview_cmd choice
+  local IFS=$'\n' preview_cmd choice
   local -a args menu
-  IFS=$'\n'
   preview_cmd="{ ${GITIGNORE_OPTS[preview_cmd]} ${GITIGNORE_OPTS[gitignore]}/templates/{2}{.gitignore,.patch}; ${GITIGNORE_OPTS[preview_cmd]} ${GITIGNORE_OPTS[gitignore]}/templates/{2}*.stack } 2>/dev/null"
   # shellcheck disable=SC2206,2207
   if [[ $# -eq 0 ]]; then
     args=($(_gitignore_list | nl -nrn -w4 -s'  ' |
-      _gitignore_fzf -m --preview="$preview_cmd" --preview-window="right:70%"))
+      _gitignore_fzf -m --preview="$preview_cmd" --preview-window="right:70%" |
+      cat
+    ))
 
     [[ ${#args[@]} -eq 0 ]] && return 1 || args=(${args[@]##* })
 
