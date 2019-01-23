@@ -1,0 +1,241 @@
+#!/usr/bin/env zsh
+# Copyright 2019, laggardkernel and the git-ignore contributors
+# SPDX-License-Identifier: MIT
+
+# Generate .gitignore files with templates from gitignore.io
+#
+# Authors:
+#   laggardkernel <laggardkernel@gmail.com>
+#
+
+# Standardized $0 handling
+0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
+
+# Define default confs.
+typeset -gA GITIGNORE_OPTS
+: "${GITIGNORE_OPTS[script]=$(basename "$0")}"
+: "${GITIGNORE_OPTS[gitignore]:=${HOME}/.git-ignore}"
+
+if (( $+commands[bat] )); then
+  _gitignore_colorize() { bat -l gitignore "$@"; }
+  GITIGNORE_OPTS[preview_cmd]="bat -l gitignore --color=always"
+else
+  _gitignore_colorize() { cat "$@"; }
+  GITIGNORE_OPTS[preview_cmd]="cat"
+fi
+
+_gitignore_usage() {
+  _gitignore_version
+  cat << EOF >&2
+
+Generates .gitignore files offline using templates from gitignore.io
+
+Usage:
+  ${GITIGNORE_OPTS[script]} [options]
+  ${GITIGNORE_OPTS[script]} keyword1 keyword2 keyword3
+
+Example:
+  ${GITIGNORE_OPTS[script]} macos,linux,windows vim emacs >> ./.gitignore
+
+Options:
+  -l, --list                List available templates
+  -s, --search keyword      Search template with  keyword in the name
+  -u, --update              Update templates
+  -h, --help                Display this help screen
+  --version                 Display version information and exit
+EOF
+}
+
+_gitignore_version() {
+  echo "${GITIGNORE_OPTS[script]} 1.1.0 by laggardkernel <laggardkernel@gmail.com>"
+  echo "https://github.com/laggardkernel/git-ignore"
+}
+
+_gitignore_info() { printf "%b[Info]%b %s\\n" '\e[0;32m' '\e[0m' "$@" >&2; }
+
+_gitignore_update() {
+  if [[ -d "${GITIGNORE_OPTS[gitignore]}" ]]; then
+    _gitignore_info 'Updating gitignore repo...'
+    (cd "${GITIGNORE_OPTS[gitignore]}" && git pull --no-rebase --ff) || return 1
+  else
+    _gitignore_info 'Initializing gitignore repo...'
+    git clone --depth=1 https://github.com/dvcs/gitignore.git "${GITIGNORE_OPTS[gitignore]}"
+  fi
+}
+
+_gitignore_clean() {
+  [[ -d "${GITIGNORE_OPTS[gitignore]}" ]] && rm -rf "${GITIGNORE_OPTS[gitignore]}"
+}
+
+_gitignore_list() {
+  local ng=0, ncm=0, IFS=$'\n'
+  local -a templates
+  [[ -o nullglob ]] && ng=1 || setopt nullglob
+  [[ -o nocasematch ]] && ncm=1 || setopt nocasematch
+
+  templates=("${GITIGNORE_OPTS[gitignore]}"/templates/*{.gitignore,.patch,.stack})
+  templates=("${templates[@]##*/}"); templates=("${templates[@]%%.*}");
+  templates=("${(u)templates[@]}")
+  <<< "${templates[@]}" sort -fu
+
+  [[ $ng = 1 ]] || unsetopt nullglob
+  [[ $ncm = 1 ]] || unsetopt nocasematch
+}
+
+_gitignore_get() {
+  local header
+  local ng=0, ncg=0
+  [[ -o nullglob ]] && ng=1 || setopt nullglob
+  [[ -o nocaseglob ]] && ncg=1 || setopt nocaseglob
+
+  for item in "$@"; do
+    # Be careful of the trivial case: Code.stack
+    for template in "${GITIGNORE_OPTS[gitignore]}"/templates/${item}{.gitignore*,.patch*,*stack}; do
+      if [[ "$template" == *.gitignore ]]; then
+        header="${template##*/}"; header="${header%.gitignore}"
+        echo "### $header ###"
+        cat "$template"
+        echo ""
+      elif [[ "$template" == *.patch ]]; then
+        header="${template##*/}"; header="${header%.patch}"
+        echo "### $header Patch ###"
+        cat "$template"
+        echo ""
+      else
+        header="${template##*/}"; header="${header%.stack}"
+        echo "### $header Stack ###"
+        cat "$template"
+        echo ""
+      fi
+    done
+  done
+
+  [[ $ng = 1 ]] || unsetopt nullglob
+  [[ $ncg = 1 ]] || unsetopt nocaseglob
+}
+
+_gitignore_search() {
+  local ng=0, ncg=0, header
+  local -a arr
+  local -a ret
+  local -a args
+  [[ -o nullglob ]] && ng=1 || setopt nullglob
+  [[ -o nocaseglob ]] && ncg=1 || setopt nocaseglob
+  for item in "$@"; do
+    IFS=',' read -r -A arr <<< "$item"
+    args=("${args[@]}" "${arr[@]}")
+  done
+
+  for item in "${args[@]}"; do
+    # Be careful of the trivial case: Code.stack
+    for template in "${GITIGNORE_OPTS[gitignore]}"/templates/${item}{*.gitignore,*.patch,*.stack}; do
+      header="${template##*/}"; header="${header%.*}"
+      ret=("${ret[@]}" "$header")
+    done
+  done
+  ret=("${(u)ret[@]}")
+  echo "${ret[@]}"
+
+  [[ $ng = 1 ]] || unsetopt nullglob
+  [[ $ncg = 1 ]] || unsetopt nocaseglob
+}
+
+_gitignore_main() {
+  [ -d "${GITIGNORE_OPTS[gitignore]}" ] || _gitignore_update
+
+  local IFS=$'\n'
+  local -a args
+
+  if [[ $# -eq 0 ]]; then
+    local preview_cmd choice
+    local -a menu
+
+    preview_cmd="{ ${GITIGNORE_OPTS[preview_cmd]} ${GITIGNORE_OPTS[gitignore]}/templates/{2}{.gitignore,.patch}; ${GITIGNORE_OPTS[preview_cmd]} ${GITIGNORE_OPTS[gitignore]}/templates/{2}*.stack } 2>/dev/null"
+
+    args=("$(_gitignore_list | nl -nrn -w4 -s'  ' |
+      _gitignore_fzf -m --preview="$preview_cmd" |
+      cat
+    )")
+
+    [[ ${#args[@]} -eq 0 ]] && return 1 || args=("${args[@]##* }")
+
+    menu=('1) Output to stdout'
+          '2) Append to .gitignore'
+          '3) Overwrite .gitignore')
+    choice=$(<<< "${menu[@]}" _gitignore_fzf +m)
+    # shellcheck disable=SC2068
+    case "$choice" in
+    1*)
+      _gitignore_get "${args[@]}" | _gitignore_colorize
+      ;;
+    2*)
+      [[ -e ./.gitignore ]] || touch ./.gitignore
+      _gitignore_get "${args[@]}" >> ./.gitignore
+      ;;
+    3*)
+      _gitignore_get "${args[@]}" >| ./.gitignore
+      ;;
+    esac
+  else
+    local -a arr
+
+    # separate strings with comma into arrays
+    for item in "$@"; do
+      IFS=',' read -r -A arr <<< "$item"
+      args=("${args[@]}" ${arr[@]})
+    done
+    _gitignore_get "${args[@]}" | _gitignore_colorize
+  fi
+}
+
+_gitignore_fzf() {
+  FZF_DEFAULT_OPTS="
+    $FZF_DEFAULT_OPTS
+    --ansi
+    --height '80%'
+    --preview-window='right:62%'
+    --bind='alt-k:preview-up,alt-p:preview-up'
+    --bind='alt-j:preview-down,alt-n:preview-down'
+    --bind='ctrl-r:toggle-all'
+    --bind='?:toggle-preview'
+    --bind='alt-w:toggle-preview-wrap'
+    " fzf "$@"
+}
+
+function join { local IFS="$1"; shift; echo "$*"; }
+
+# Option parsing
+if [[ $# -eq 0 ]]; then
+  if (( $+commands[fzf] )); then
+    _gitignore_main
+  else
+    _gitignore_usage
+  fi
+else
+  case "$1" in
+    -l|--list)
+      ret=($(_gitignore_list))
+      join "," "${ret[@]}"
+      echo "Total: ${#ret[@]}"
+      ;;
+    -s|--search)
+      shift
+      _gitignore_search "$@"
+      ;;
+    -u|--update)
+      _gitignore_update
+      ;;
+    -c|--clean)
+      _gitignore_clean
+      ;;
+    -h|--help)
+      _gitignore_usage;
+      ;;
+    -v|--version)
+      _gitignore_version
+      ;;
+    *)
+      shift
+      _gitignore_main "$@"
+  esac
+fi

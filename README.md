@@ -8,9 +8,10 @@ ZSH plugin. Generate `.gitignore` with templates from [gitignore.io](https://www
 
 ## Feature
 - Use `git-ignore` command to generate `.gitignore` files
-    - `git` sub-command `git ignore` will be supported later
+  - `git` sub-command `git ignore` is also supported now
 - Templates selection helped by fuzzy finder with preview
 - ZSH completion for command `git-ignore`
+  - Only for `git-ignore`, not `git ignore`
 - Use same [`.gitignore` templates](https://github.com/dvcs/gitignore) used by [gitignore.io](https://www.gitignore.io/) from [dvcs/gitignore](https://github.com/dvcs/gitignore)
 - Imitate templates generation behavior of [gitignore.io](https://www.gitignore.io/) exactly
 
@@ -59,13 +60,49 @@ Sorry, I don't care much.
 $ alias gi="git-ignore"
 
 # With fzf installed
-$ gi
+$ gi # then press <Enter>
 
 # Separate params with spaces or commas
 $ gi macos linux windows vim emacs >> ./.gitignore
 
 # Overwrite existing .gitignore
 $ gi macos,linux,windows vim emacs >| ./.gitignore
+```
+
+### New CLI （`v1.1.0+`)
+
+```zsh
+❯ gi -h
+git-ignore 1.1.0 by laggardkernel <laggardkernel@gmail.com>
+https://github.com/laggardkernel/git-ignore
+
+Generates .gitignore files offline using templates from gitignore.io
+
+Usage:
+  git-ignore [options]
+  git-ignore keyword1 keyword2 keyword3
+
+Example:
+  git-ignore macos,linux,windows vim emacs >> ./.gitignore
+
+Options:
+  -l, --list                List available templates
+  -s, --search keyword      Search template with  keyword in the name
+  -u, --update              Update templates
+  -h, --help                Display this help screen
+  --version                 Display version information and exit
+
+❯ gi -l
+1C,1C-Bitrix,A-Frame,Actionscript,Ada,Adobe,AdvancedInstaller,Agda,AL...
+# omitted because it is too long
+Total: 468
+
+❯ gi -s py # then press <Tab> for completion
+pycharm      pycharm+all  pycharm+iml  pydev        python
+
+❯ gi -u
+[Info] Updating gitignore repo...
+Already up to date.
 ```
 
 ## Optional Dependencies
@@ -96,8 +133,8 @@ $ gi macos,linux,windows vim emacs >| ./.gitignore
 - [x] Remove unnecessary external dependencies: ~~`sed`~~, ~~`awk`~~
 - [x] ZSH completion
 - [ ] Configure the plugin with `zstyle`
-- [ ] `git` sub-command `git ignore`
-- [ ] More sub commands like `list`, `update`, etc
+- [x] `git` sub-command `git ignore`
+- [x] Options like `--list`, `--update`, `--search` etc
 
 ## Credits
 
