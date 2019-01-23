@@ -96,8 +96,8 @@ _gitignore_get() {
   [[ -o nocaseglob ]] && ncg=1 || setopt nocaseglob
 
   for item in "$@"; do
-    # Be careful of the trivial case: Code.stack
-    for template in "${GITIGNORE_OPTS[gitignore]}"/templates/${item}{.gitignore*,.patch*,*stack}; do
+    # Be careful of the trivial case: Code.stack, doesn't fall in ${item}.*.stack
+    for template in "${GITIGNORE_OPTS[gitignore]}"/templates/${item}{.gitignore*,.patch*,.*stack}; do
       if [[ "$template" == *.gitignore ]]; then
         header="${template##*/}"; header="${header%.gitignore}"
         echo "### $header ###"
@@ -159,10 +159,10 @@ _gitignore_main() {
 
     preview_cmd="{ ${GITIGNORE_OPTS[preview_cmd]} ${GITIGNORE_OPTS[gitignore]}/templates/{2}{.gitignore,.patch}; ${GITIGNORE_OPTS[preview_cmd]} ${GITIGNORE_OPTS[gitignore]}/templates/{2}*.stack } 2>/dev/null"
 
-    args=("$(_gitignore_list | nl -nrn -w4 -s'  ' |
+    args=($(_gitignore_list | nl -nrn -w4 -s'  ' |
       _gitignore_fzf -m --preview="$preview_cmd" |
       cat
-    )")
+    ))
 
     [[ ${#args[@]} -eq 0 ]] && return 1 || args=("${args[@]##* }")
 
@@ -183,6 +183,7 @@ _gitignore_main() {
       _gitignore_get "${args[@]}" >| ./.gitignore
       ;;
     esac
+    set +x
   else
     local -a arr
 
