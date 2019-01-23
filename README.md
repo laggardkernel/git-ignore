@@ -14,6 +14,8 @@ ZSH plugin. Generate `.gitignore` with templates from [gitignore.io](https://www
   - Only for `git-ignore`, not `git ignore`
 - Use the same [`.gitignore` templates](https://github.com/dvcs/gitignore) used by [gitignore.io](https://www.gitignore.io/) from [dvcs/gitignore](https://github.com/dvcs/gitignore)
 - Imitate templates generation behavior of [gitignore.io](https://www.gitignore.io/) exactly
+- Pull/Update templates from [dvcs/gitignore](https://github.com/dvcs/gitignore) with `git-ignore --update`.
+  - No need to update this plugin regularly to get updated templates.
 
 ## Installation
 
