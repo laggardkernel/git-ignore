@@ -13,7 +13,7 @@
 
 # Define default confs.
 typeset -gA GITIGNORE_OPTS
-: "${GITIGNORE_OPTS[script]=$(basename "$0")}"
+: "${GITIGNORE_OPTS[script]="${0##*/}"}"
 : "${GITIGNORE_OPTS[gitignore]:=${HOME}/.git-ignore}"
 
 if (( $+commands[bat] )); then
