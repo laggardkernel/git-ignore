@@ -12,7 +12,7 @@ ZSH plugin. Generate `.gitignore` with templates from [gitignore.io](https://www
 - Templates selection helped by fuzzy finder with preview
 - ZSH completion for command `git-ignore`
   - Only for `git-ignore`, not `git ignore`
-- Use same [`.gitignore` templates](https://github.com/dvcs/gitignore) used by [gitignore.io](https://www.gitignore.io/) from [dvcs/gitignore](https://github.com/dvcs/gitignore)
+- Use the same [`.gitignore` templates](https://github.com/dvcs/gitignore) used by [gitignore.io](https://www.gitignore.io/) from [dvcs/gitignore](https://github.com/dvcs/gitignore)
 - Imitate templates generation behavior of [gitignore.io](https://www.gitignore.io/) exactly
 
 ## Installation
@@ -72,6 +72,8 @@ $ gi macos,linux,windows vim emacs >| ./.gitignore
 ### New CLI （`v1.1.0+`)
 
 ```zsh
+❯ alias gi="git-ignore"
+
 ❯ gi -h
 git-ignore 1.1.0 by laggardkernel <laggardkernel@gmail.com>
 https://github.com/laggardkernel/git-ignore
@@ -134,7 +136,7 @@ Already up to date.
 - [x] ZSH completion
 - [ ] Configure the plugin with `zstyle`
 - [x] `git` sub-command `git ignore`
-- [x] Options like `--list`, `--update`, `--search` etc
+- [x] Options like `--list`, `--update`, `--search`, etc
 
 ## Credits
 
