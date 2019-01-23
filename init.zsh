@@ -87,7 +87,7 @@ _gitignore_get() {
   [[ $ncg = 1 ]] || unsetopt nocaseglob
 }
 
-gitignore() {
+git-ignore() {
   [ -d "${GITIGNORE_OPTS[gitignore]}" ] || _gitignore_update
 
   local IFS=$'\n' preview_cmd choice
@@ -151,4 +151,4 @@ _gitignore () {
   compadd -S '' "${templates[@]}"
 }
 
-compdef _gitignore gitignore
+compdef _gitignore git-ignore
