@@ -70,7 +70,7 @@ _gitignore_clean() {
     rm -rf "${GITIGNORE_OPTS[gitignore]}"
   else
     _gitignore_info "No available local gitignore repo"
-    _gitignore_info 'Use `git -u` to init'
+    _gitignore_info 'Use `gi -u` to init'
   fi
 }
 

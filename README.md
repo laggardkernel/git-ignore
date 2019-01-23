@@ -90,9 +90,11 @@ Example:
 Options:
   -l, --list                List available templates
   -s, --search keyword      Search template with  keyword in the name
-  -u, --update              Update templates
+  -u, --update              Init/Update local templates repo
+  -c, --clean               Clean local gitignore templates repo
   -h, --help                Display this help screen
   --version                 Display version information and exit
+
 
 ❯ gi -l
 1C,1C-Bitrix,A-Frame,Actionscript,Ada,Adobe,AdvancedInstaller,Agda,AL...
@@ -105,6 +107,10 @@ pycharm      pycharm+all  pycharm+iml  pydev        python
 ❯ gi -u
 [Info] Updating gitignore repo...
 Already up to date.
+
+❯ gi -c
+[Info] No available local gitignore repo
+[Info] Use `gi -u` to init
 ```
 
 ## Optional Dependencies
