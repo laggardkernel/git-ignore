@@ -237,12 +237,19 @@ else
       ;;
     -h|--help)
       _gitignore_usage;
+      exit 0
       ;;
     -v|--version)
       _gitignore_version
+      exit 0
+      ;;
+    [!-]*)
+      _gitignore_main "$@"
       ;;
     *)
-      shift
-      _gitignore_main "$@"
+      (>&2 printf "Unknown parameter: %s\n" "$1")
+      _gitignore_usage
+      exit 1
+      ;;
   esac
 fi
