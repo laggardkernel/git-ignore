@@ -55,13 +55,16 @@ Sorry, I don't care much.
 ## Usage
 
 ```zsh
-alias gi="gitignore"
+$ alias gi="gitignore"
 
-# with fzf installed
-gi
+# With fzf installed
+$ gi
 
-# or, gi keyword1 keyword2
-gi macos linux windows vim emacs > ./.gitignore
+# Separate params with spaces or commas
+$ gi macos linux windows vim emacs >> ./.gitignore
+
+# Overwrite existing .gitignore
+$ gi macos,linux,windows vim emacs >| ./.gitignore
 ```
 
 ## Optional Dependencies
@@ -84,10 +87,16 @@ gi macos linux windows vim emacs > ./.gitignore
 
 ## Todo
 
-- [x] Remove unnecessary external dependencies: ~~`sed`, `awk`~~
+- [] Support all [types of files used by gitignore.io](https://github.com/dvcs/gitignore#files)
+  - [x] Templates
+  - [x] Patch
+  - [x] Stack
+  - [ ] Order
+- [x] Remove unnecessary external dependencies: ~~`sed`~~, ~~`awk`~~
 - [ ] ZSH completion (half done)
 - [ ] Configure the plugin with `zstyle`
 - [ ] Migrate `gitignore` as sub command `git ignore`
+- [ ] More sub commands like `list`, `update`, etc
 
 ## Credits
 
