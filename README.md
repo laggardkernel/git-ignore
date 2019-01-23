@@ -93,6 +93,8 @@ gi macos linux windows vim emacs > ./.gitignore
 
 [Git-ignore](https://github.com/laggardkernel) is originally based on [wfxr/forgit](https://github.com/wfxr/forgit). [laggardkernel](https://github.com/laggardkernel) added the feature to generate `.gitignore` files using templates **offline**. Later, this function is separated as [laggardkernel/git-ignore](https://github.com/laggardkernel) because of disagreement on implementation.
 
+[dvcs/gitignore](https://github.com/dvcs/gitignore): The largest collection of useful `.gitignore` templates. [https://www.gitignore.io](https://www.gitignore.io)
+
 ## License
 
 The MIT License (MIT)
