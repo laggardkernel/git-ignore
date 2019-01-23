@@ -40,7 +40,8 @@ Example:
 Options:
   -l, --list                List available templates
   -s, --search keyword      Search template with  keyword in the name
-  -u, --update              Update templates
+  -u, --update              Init/Update local templates repo
+  -c, --clean               Clean local gitignore templates repo
   -h, --help                Display this help screen
   --version                 Display version information and exit
 EOF
@@ -64,7 +65,13 @@ _gitignore_update() {
 }
 
 _gitignore_clean() {
-  [[ -d "${GITIGNORE_OPTS[gitignore]}" ]] && rm -rf "${GITIGNORE_OPTS[gitignore]}"
+  if [[ -d "${GITIGNORE_OPTS[gitignore]}" ]]; then
+    _gitignore_info "Cleaning gitignore repo from ${GITIGNORE_OPTS[gitignore]}..."
+    rm -rf "${GITIGNORE_OPTS[gitignore]}"
+  else
+    _gitignore_info "No available local gitignore repo"
+    _gitignore_info 'Use `git -u` to init'
+  fi
 }
 
 _gitignore_list() {
