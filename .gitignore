@@ -180,5 +180,9 @@ GitHub.sublime-settings
 .history
 
 ### Custom ###
+# template folder
 /gitignore/
 /.git-ignore/
+
+# ZSH bytecode
+*.zwc
