@@ -25,7 +25,7 @@ The only ZSH plugin manager solves the time-consuming init for `nvm`, `nodenv`, 
 
 ```zsh
 # add it into ur .zshrc
-zplugin ice pick'init.zsh' atload'alias gi="git-ignore"'
+zplugin ice pick'init.zsh' blockf atload'alias gi="git-ignore"'
 zplugin light laggardkernel/git-ignore
 ```
 
@@ -91,12 +91,11 @@ Example:
 
 Options:
   -l, --list                List available templates
-  -s, --search keyword      Search template with  keyword in the name
+  -s, --search keyword      Search template with keyword in filenames
   -u, --update              Init/Update local templates repo
   -c, --clean               Clean local gitignore templates repo
   -h, --help                Display this help screen
-  --version                 Display version information and exit
-
+  -v, --version             Display version information and exit
 
 ❯ gi -l
 1C,1C-Bitrix,A-Frame,Actionscript,Ada,Adobe,AdvancedInstaller,Agda,AL...
@@ -142,15 +141,19 @@ Already up to date.
   - [ ] Order
 - [x] Remove unnecessary external dependencies: ~~`sed`~~, ~~`awk`~~
 - [x] ZSH completion
-- [ ] Configure the plugin with `zstyle`
+  - [x] Separate `compdef` into file `function/_git-ignore`
 - [x] `git` sub-command `git ignore`
 - [x] Options like `--list`, `--update`, `--search`, etc
+- ~~[ ] Configure the plugin with `zstyle`~~
+- [ ] Script file compatible with BASH
 
-## Credits
+## Related projects
 
-[Git-ignore](https://github.com/laggardkernel/git-ignore) is originally based on [wfxr/forgit](https://github.com/wfxr/forgit). [laggardkernel](https://github.com/laggardkernel) added the feature to generate `.gitignore` files using templates **offline**. Later, this function is separated as [laggardkernel/git-ignore](https://github.com/laggardkernel) because of disagreement on implementation.
+[wfxr/forgit](https://github.com/wfxr/forgit): [git-ignore](https://github.com/laggardkernel/git-ignore) was designed to be a feature of it. And generating `.gitignore` files **offline** was first introduced by me into it. Later, [git-ignore](https://github.com/laggardkernel) is separated from forgit because of disagreement on implementation.
 
 [dvcs/gitignore](https://github.com/dvcs/gitignore): The largest collection of useful `.gitignore` templates, used by [https://www.gitignore.io](https://www.gitignore.io)
+
+[simonwhitaker/gibo](https://github.com/simonwhitaker/gibo): Another `.gitignore` generator using templates from [github/gitignore](https://github.com/github/gitignore) written in POSIX sh.
 
 ## License
 

@@ -39,11 +39,11 @@ Example:
 
 Options:
   -l, --list                List available templates
-  -s, --search keyword      Search template with  keyword in the name
+  -s, --search keyword      Search template with keyword in filenames
   -u, --update              Init/Update local templates repo
   -c, --clean               Clean local gitignore templates repo
   -h, --help                Display this help screen
-  --version                 Display version information and exit
+  -v, --version             Display version information and exit
 EOF
 }
 

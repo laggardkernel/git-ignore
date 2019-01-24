@@ -1,0 +1,44 @@
+#compdef git-ignore
+#autoload
+#
+# Copyright 2019, laggardkernel and the git-ignore contributors
+# SPDX-License-Identifier: MIT
+
+#
+# Completes git-ignore.
+#
+# Authors:
+#   laggardkernel <laggardkernel@gmail.com>
+#
+
+local ret=1
+
+_git-ignore_list() {
+  local ng=0, ncm=0, IFS=$'\n'
+  local -a templates
+  [[ -o nullglob ]] && ng=1 || setopt nullglob
+  [[ -o nocasematch ]] && ncm=1 || setopt nocasematch
+
+  templates=("${GITIGNORE_OPTS[gitignore]}"/templates/*{.gitignore,.patch,.stack})
+  templates=("${templates[@]##*/}"); templates=("${templates[@]%%.*}");
+  templates=("${(u)templates[@]}")
+  templates=($(<<< "${templates[@]}" sort -fu))
+  templates=("${templates[@]:l}")
+
+  [[ $ng = 1 ]] || unsetopt nullglob
+  [[ $ncm = 1 ]] || unsetopt nocasematch
+
+  compset -P '*,'
+  _arguments "*:template:($templates)"
+}
+
+_arguments \
+  {-l,--list}'[List available templates]' \
+  {-s,--search}'[Search template with keyword in filenames]' \
+  {-u,--update}'[Init/Update local templates repo]' \
+  {-c,--clean}'[Clean local gitignore templates repo]' \
+  {-h,--help}'[Display this help screen]' \
+  {-v,--version}'[Display version information and exit]' \
+  '*: :_git-ignore_list' && ret=0
+
+return ret
