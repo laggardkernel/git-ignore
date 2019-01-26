@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improve globbing for template fetching.
 
 ### Fixed
+- Correct folder name `function` as `functions`
 - Quit `fzf` menu directly if no item is selected, skip the later output prompt.
 
 ## [1.1.0] - 2019-01-23

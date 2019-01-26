@@ -16,4 +16,4 @@ typeset -gA GITIGNORE_OPTS
 : "${GITIGNORE_OPTS[gitignore]:=${0:h}/.git-ignore}"
 
 path+=("${0:h}/bin" "${path[@]}")
-fpath+=("${path[@]}" "${0:h}/function")
+fpath+=("${path[@]}" "${0:h}/functions")

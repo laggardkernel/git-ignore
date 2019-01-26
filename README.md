@@ -141,7 +141,7 @@ Already up to date.
   - [ ] Order
 - [x] Remove unnecessary external dependencies: ~~`sed`~~, ~~`awk`~~
 - [x] ZSH completion
-  - [x] Separate `compdef` into file `function/_git-ignore`
+  - [x] Separate `compdef` into file `functions/_git-ignore`
 - [x] `git` sub-command `git ignore`
 - [x] Options like `--list`, `--update`, `--search`, etc
 - ~~[ ] Configure the plugin with `zstyle`~~
