@@ -10,18 +10,20 @@
 
 # Standardized $0 handling
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
+XDG_DATA_HOME="${XDG_DATA_HOME:=$HOME/.local/share}"
 
 # Define default confs.
-typeset -gA GITIGNORE_OPTS
-: "${GITIGNORE_OPTS[script]="${0##*/}"}"
-: "${GITIGNORE_OPTS[gitignore]:=${HOME}/.git-ignore}"
+typeset -g GI_TEMPLATE="${GI_TEMPLATE:=$XDG_DATA_HOME/git-ignore}"
+typeset -gA GI_OPTS
+: "${GI_OPTS[script]="${0##*/}"}"
+: "${GI_OPTS[template]:=$GI_TEMPLATE}"
 
 if (( $+commands[bat] )); then
   _gitignore_colorize() { bat -l gitignore "$@"; }
-  GITIGNORE_OPTS[preview_cmd]="bat -l gitignore --color=always"
+  GI_OPTS[preview_cmd]="bat -l gitignore --color=always"
 else
   _gitignore_colorize() { cat "$@"; }
-  GITIGNORE_OPTS[preview_cmd]="cat"
+  GI_OPTS[preview_cmd]="cat"
 fi
 
 _gitignore_usage() {
@@ -31,11 +33,11 @@ _gitignore_usage() {
 Generates .gitignore files offline using templates from gitignore.io
 
 Usage:
-  ${GITIGNORE_OPTS[script]} [options]
-  ${GITIGNORE_OPTS[script]} keyword1 keyword2 keyword3
+  ${GI_OPTS[script]} [options]
+  ${GI_OPTS[script]} keyword1 keyword2 keyword3
 
 Example:
-  ${GITIGNORE_OPTS[script]} macos,linux,windows vim emacs >> ./.gitignore
+  ${GI_OPTS[script]} macos,linux,windows vim emacs >> ./.gitignore
 
 Options:
   -l, --list                List available templates
@@ -48,26 +50,26 @@ EOF
 }
 
 _gitignore_version() {
-  echo "${GITIGNORE_OPTS[script]} 1.1.0 by laggardkernel <laggardkernel@gmail.com>"
+  echo "${GI_OPTS[script]} 1.1.0 by laggardkernel <laggardkernel@gmail.com>"
   echo "https://github.com/laggardkernel/git-ignore"
 }
 
 _gitignore_info() { printf "%b[Info]%b %s\\n" '\e[0;32m' '\e[0m' "$@" >&2; }
 
 _gitignore_update() {
-  if [[ -d "${GITIGNORE_OPTS[gitignore]}" ]]; then
+  if [[ -d "${GI_OPTS[template]}" ]]; then
     _gitignore_info 'Updating gitignore repo...'
-    (cd "${GITIGNORE_OPTS[gitignore]}" && git pull --no-rebase --ff) || return 1
+    (cd "${GI_OPTS[template]}" && git pull --no-rebase --ff) || return 1
   else
     _gitignore_info 'Initializing gitignore repo...'
-    git clone --depth=1 https://github.com/dvcs/gitignore.git "${GITIGNORE_OPTS[gitignore]}"
+    git clone --depth=1 https://github.com/dvcs/gitignore.git "${GI_OPTS[template]}"
   fi
 }
 
 _gitignore_clean() {
-  if [[ -d "${GITIGNORE_OPTS[gitignore]}" ]]; then
-    _gitignore_info "Cleaning gitignore repo from ${GITIGNORE_OPTS[gitignore]}..."
-    rm -rf "${GITIGNORE_OPTS[gitignore]}"
+  if [[ -d "${GI_OPTS[template]}" ]]; then
+    _gitignore_info "Cleaning gitignore repo from ${GI_OPTS[template]}..."
+    rm -rf "${GI_OPTS[template]}"
   else
     _gitignore_info "No available local gitignore repo"
     _gitignore_info 'Use `gi -u` to init'
@@ -80,7 +82,7 @@ _gitignore_list() {
   [[ -o nullglob ]] && ng=1 || setopt nullglob
   [[ -o nocasematch ]] && ncm=1 || setopt nocasematch
 
-  templates=("${GITIGNORE_OPTS[gitignore]}"/templates/*{.gitignore,.patch,.stack})
+  templates=("${GI_OPTS[template]}"/templates/*{.gitignore,.patch,.stack})
   templates=("${templates[@]##*/}"); templates=("${templates[@]%%.*}");
   templates=("${(u)templates[@]}")
   <<< "${templates[@]}" sort -fu
@@ -97,7 +99,7 @@ _gitignore_get() {
 
   for item in "$@"; do
     # Be careful of the trivial case: Code.stack, doesn't fall in ${item}.*.stack
-    for template in "${GITIGNORE_OPTS[gitignore]}"/templates/${item}{.gitignore*,.patch*,.*stack}; do
+    for template in "${GI_OPTS[template]}"/templates/${item}{.gitignore*,.patch*,.*stack}; do
       if [[ "$template" == *.gitignore ]]; then
         header="${template##*/}"; header="${header%.gitignore}"
         echo "### $header ###"
@@ -135,7 +137,7 @@ _gitignore_search() {
 
   for item in "${args[@]}"; do
     # Be careful of the trivial case: Code.stack
-    for template in "${GITIGNORE_OPTS[gitignore]}"/templates/${item}{*.gitignore,*.patch,*.stack}; do
+    for template in "${GI_OPTS[template]}"/templates/${item}{*.gitignore,*.patch,*.stack}; do
       header="${template##*/}"; header="${header%.*}"
       ret=("${ret[@]}" "$header")
     done
@@ -148,7 +150,7 @@ _gitignore_search() {
 }
 
 _gitignore_main() {
-  [ -d "${GITIGNORE_OPTS[gitignore]}" ] || _gitignore_update
+  [ -d "${GI_OPTS[template]}" ] || _gitignore_update
 
   local IFS=$'\n'
   local -a args
@@ -157,7 +159,7 @@ _gitignore_main() {
     local preview_cmd choice
     local -a menu
 
-    preview_cmd="{ ${GITIGNORE_OPTS[preview_cmd]} ${GITIGNORE_OPTS[gitignore]}/templates/{2}{.gitignore,.patch}; ${GITIGNORE_OPTS[preview_cmd]} ${GITIGNORE_OPTS[gitignore]}/templates/{2}*.stack } 2>/dev/null"
+    preview_cmd="{ ${GI_OPTS[preview_cmd]} ${GI_OPTS[template]}/templates/{2}{.gitignore,.patch}; ${GI_OPTS[preview_cmd]} ${GI_OPTS[template]}/templates/{2}*.stack } 2>/dev/null"
 
     args=($(_gitignore_list | nl -nrn -w4 -s'  ' |
       _gitignore_fzf -m --preview="$preview_cmd" |

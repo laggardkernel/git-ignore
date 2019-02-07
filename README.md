@@ -145,6 +145,7 @@ Already up to date.
 - [x] `git` sub-command `git ignore`
 - [x] Options like `--list`, `--update`, `--search`, etc
 - ~~[ ] Configure the plugin with `zstyle`~~
+  - [x] custom template storage location with `GI_TEMPLATE`
 - [ ] Script file compatible with BASH
 
 ## Related projects

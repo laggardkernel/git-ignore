@@ -16,10 +16,11 @@ local ret=1
 _git-ignore_list() {
   local ng=0, ncm=0, IFS=$'\n'
   local -a templates
+  XDG_DATA_HOME="${XDG_DATA_HOME:=$HOME/.local/share}"
   [[ -o nullglob ]] && ng=1 || setopt nullglob
   [[ -o nocasematch ]] && ncm=1 || setopt nocasematch
 
-  templates=("${GITIGNORE_OPTS[gitignore]}"/templates/*{.gitignore,.patch,.stack})
+  templates=("${GI_TEMPLATE:=$XDG_DATA_HOME/git-ignore}"/templates/*{.gitignore,.patch,.stack})
   templates=("${templates[@]##*/}"); templates=("${templates[@]%%.*}");
   templates=("${(u)templates[@]}")
   templates=($(<<< "${templates[@]}" sort -fu))

@@ -7,10 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Completion for command options. (Only template keywords are supported before)
+- Customize templates location with environment variable `GI_TEMPLATE` with fallback
+  1. `.git-ignore` directory under this plugin's root folder
+  2. `$XDG_DATA_HOME/git-ignore`
+  3. `$HOME/.local/share/git-ignore`
 
 ### Changed
 - Separate `compdef` into file `function/_git-ignore` to speed thing up.
 - Improve globbing for template fetching.
+- Move default template location to compliant with XDG base directory
 
 ### Fixed
 - Correct folder name `function` as `functions`

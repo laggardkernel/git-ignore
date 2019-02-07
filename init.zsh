@@ -12,8 +12,7 @@
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 
 # Define default confs.
-typeset -gA GITIGNORE_OPTS
-: "${GITIGNORE_OPTS[gitignore]:=${0:h}/.git-ignore}"
+export GI_TEMPLATE="${0:h}/.git-ignore"
 
 path+=("${0:h}/bin" "${path[@]}")
 fpath+=("${path[@]}" "${0:h}/functions")
