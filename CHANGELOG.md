@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2.0] - 2019-02-14
 ### Added
 - Completion for command options. (Only template keywords are supported before)
 - Customize templates location with environment variable `GI_TEMPLATE` with fallback
@@ -61,6 +61,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Unnecessary external command `awk`.
     - Unnecessary pipes `|`.
 
-[Unreleased]: https://github.com/laggardkernel/git-ignore/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/laggardkernel/git-ignore/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/laggardkernel/git-ignore/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/laggardkernel/git-ignore/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/laggardkernel/git-ignore/compare/11f3ff62...v1.0.0

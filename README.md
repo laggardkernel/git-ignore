@@ -1,32 +1,34 @@
 # git-ignore
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: MIT][license icon]][license]
 
-ZSH plugin. Generate `.gitignore` with templates from [gitignore.io](https://www.gitignore.io/) **offline**, taking the advantage of [`fzf`](https://github.com/junegunn/fzf) fuzzy finder, [`bat`](https://github.com/sharkdp/bat) syntax highlighting and ZSH completion.
+ZSH plugin. Generate `.gitignore` with templates from [gitignore.io][gitignore.io]
+**offline**, taking the advantage of [`fzf`][fzf] fuzzy finder,
+[`bat`][bat] syntax highlighting and ZSH completion.
 
 ![images/preview-01.jpg](../assets/images/preview-01.jpg?raw=true)
 
 ## Feature
-- Use `git-ignore` command to generate `.gitignore` files
-  - `git` sub-command `git ignore` is also supported now
-- Templates selection helped by fuzzy finder with preview
-- ZSH completion for command `git-ignore`
-  - Only for `git-ignore`, not `git ignore`
-- Use the same [`.gitignore` templates](https://github.com/dvcs/gitignore) used by [gitignore.io](https://www.gitignore.io/) from [dvcs/gitignore](https://github.com/dvcs/gitignore)
-- Imitate templates generation behavior of [gitignore.io](https://www.gitignore.io/) exactly
-- Pull/Update templates from [dvcs/gitignore](https://github.com/dvcs/gitignore) with `git-ignore --update`.
-  - No need to update this plugin regularly to get updated templates.
+
+Basically, this plugin is an offline variant of [gitignore.io][gitignore.io]
+with ZSH goodies:
+- imitating template generation behavior of [gitignore.io][gitignore.io] exactly
+- fuzzy finder [`fzf`][fzf] selection with preview
+- ZSH completion
+- pull/update templates from command line (no need to update this plugin)
 
 ## Installation
 
-### [Zplugin](https://github.com/zdharma/zplugin)
+### [Zplugin][zplugin]
 
-The only ZSH plugin manager solves the time-consuming init for `nvm`, `nodenv`, `pyenv`, `rvm`, `rbenv`, `thefuck`, `fasd`, etc, with its amazing async [Turbo Mode](https://github.com/zdharma/zplugin#turbo-mode-zsh--53).
+The only ZSH plugin manager solves the time-consuming init for
+`nvm`, `nodenv`, `pyenv`, `rvm`, `rbenv`, `thefuck`, `fasd`, etc,
+with its amazing async [Turbo Mode][turbo mode].
 
 ```zsh
-# add it into ur .zshrc
-zplugin ice pick'init.zsh' blockf atload'alias gi="git-ignore"'
+zplugin ice pick'init.zsh' blockf
 zplugin light laggardkernel/git-ignore
+alias gi="git-ignore"
 ```
 
 Update the plugin with
@@ -35,33 +37,26 @@ Update the plugin with
 $ zplg update laggardkernel/git-ignore
 ```
 
-### [Prezto](https://github.com/sorin-ionescu/prezto)
+### [Prezto][prezto]
 
 The only framework does **optimizations** in plugins with sophisticated coding skill:
-- [Refreshing `.zcompdump` every 20h](https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/completion/init.zsh#L31-L41)
-- [Compiling `.zcompdump` as bytecode in the background](https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/runcoms/zlogin#L9-L15)
-- [Caching init script for fasd](https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/fasd/init.zsh#L22-L36)
-- Saving `*env` startup time with [`init - --no-rehash` for `rbenv`, `pyenv`, `nodenv`](https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/python/init.zsh#L22)
-- [Removing the horribly time-consuming `brew command` from `command-not-found`](https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/command-not-found/init.zsh)
+- [refreshing `.zcompdump` every 20h][prezto zcompdump 1]
+- [compiling `.zcompdump` as bytecode in the background][prezto zcompdump 2]
+- [caching init script for fasd][prezto fasd]
+- saving `*env` startup time with [`init - --no-rehash` for `rbenv`, `pyenv`, `nodenv`][prezto *env]
+- [removing the horribly time-consuming `brew command` from `command-not-found`][prezto brew command]
 
 ```zsh
-mkdir -p ${ZDOTDIR:-$HOME}/.zprezto/contrib &>/dev/null
-git clone git@github.com:laggardkernel/git-ignore.git ${ZDOTDIR:-$HOME}/.zprezto/contrib/git-ignore
-
-# or use HTTPS instead
+mkdir -p ${ZDOTDIR:-$HOME}/.zprezto/contrib 2>/dev/null
 git clone https://github.com/laggardkernel/git-ignore.git ${ZDOTDIR:-$HOME}/.zprezto/contrib/git-ignore
 ```
-
-### Others
-
-Sorry, I don't care much.
 
 ## Usage
 
 ```zsh
 $ alias gi="git-ignore"
 
-# With fzf installed
+# Depends on fzf
 $ gi # then press <Enter>
 
 # Separate params with spaces or commas
@@ -100,7 +95,7 @@ Options:
 ❯ gi -l
 1C,1C-Bitrix,A-Frame,Actionscript,Ada,Adobe,AdvancedInstaller,Agda,AL...
 # omitted because it is too long
-Total: 468
+Total: 479
 
 ❯ gi -s py # then press <Tab> for completion
 pycharm      pycharm+all  pycharm+iml  pydev        python
@@ -114,9 +109,15 @@ Already up to date.
 [Info] Use `gi -u` to init
 ```
 
+### Environment Variables
+`GI_TEMPLATE`: location for templates storage. It fallbacks to:
+1. `.git-ignore` directory under plugin's root folder
+2. `${XDG_DATA_HOME}/git-ignore` (in case the script is not used as a ZSH plugin)
+3. `$HOME/.local/share/git-ignore`
+
 ## Optional Dependencies
-- [`fzf`](https://github.com/junegunn/fzf): Command-line fuzzy finder
-- [`bat`](https://github.com/sharkdp/bat): Syntax highlighting for `.gitignore` templates.
+- [`fzf`][fzf]: Command-line fuzzy finder
+- [`bat`][bat]: Syntax highlighting for `.gitignore` templates.
 
 ### Default Keybindings for `fzf`
 
@@ -134,7 +135,7 @@ Already up to date.
 
 ## Todo
 
-- [ ] Support all types of templates files from [dvcs/gitignore](https://github.com/dvcs/gitignore#files)
+- [ ] Support all types of templates files from [dvcs/gitignore][dvcs/gitignore]
   - [x] Templates
   - [x] Patch
   - [x] Stack
@@ -150,11 +151,16 @@ Already up to date.
 
 ## Related projects
 
-[wfxr/forgit](https://github.com/wfxr/forgit): [git-ignore](https://github.com/laggardkernel/git-ignore) was designed to be a feature of it. And generating `.gitignore` files **offline** was first introduced by me into it. Later, [git-ignore](https://github.com/laggardkernel) is separated from forgit because of disagreement on implementation.
+[wfxr/forgit][wfxr/forgit]: [git-ignore][git-ignore] was designed to be a feature of
+it. And generating `.gitignore` files **offline** was first introduced by me into it.
+Later, [git-ignore](https://github.com/laggardkernel) is separated from forgit
+because of disagreement on implementation.
 
-[dvcs/gitignore](https://github.com/dvcs/gitignore): The largest collection of useful `.gitignore` templates, used by [https://www.gitignore.io](https://www.gitignore.io)
+[dvcs/gitignore][dvcs/gitignore]: The largest collection of useful `.gitignore`
+templates, maintained by [https://www.gitignore.io][gitignore.io].
 
-[simonwhitaker/gibo](https://github.com/simonwhitaker/gibo): Another `.gitignore` generator using templates from [github/gitignore](https://github.com/github/gitignore) written in POSIX sh.
+[simonwhitaker/gibo][simonwhitaker/gibo]: Another `.gitignore` generator using
+templates from [github/gitignore][github/gitignore] written in POSIX sh.
 
 ## License
 
@@ -163,3 +169,22 @@ The MIT License (MIT)
 Copyright (c) 2019 laggardkernel
 
 Copyright (c) 2019 Wenxuan Zhang
+
+[license icon]: https://img.shields.io/badge/License-MIT-yellow.svg
+[license]: https://opensource.org/licenses/MIT
+[gitignore.io]: https://www.gitignore.io/
+[fzf]: https://github.com/junegunn/fzf
+[bat]: https://github.com/sharkdp/bat
+[dvcs/gitignore]: https://github.com/dvcs/gitignore
+[zplugin]: https://github.com/zdharma/zplugin
+[turbo mode]: https://github.com/zdharma/zplugin#turbo-mode-zsh--53
+[prezto]: https://github.com/sorin-ionescu/prezto
+[prezto zcompdump 1]: https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/completion/init.zsh#L31-L41
+[prezto zcompdump 2]: https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/runcoms/zlogin#L9-L15
+[prezto fasd]: https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/fasd/init.zsh#L22-L36
+[prezto *env]: https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/python/init.zsh#L22
+[prezto brew command]: https://github.com/sorin-ionescu/prezto/blob/4abbc5572149baa6a5e7e38393a4b2006f01024f/modules/command-not-found/init.zsh
+[wfxr/forgit]: https://github.com/wfxr/forgit
+[git-ignore]: https://github.com/laggardkernel/git-ignore
+[simonwhitaker/gibo]: https://github.com/simonwhitaker/gibo
+[github/gitignore]: https://github.com/github/gitignore

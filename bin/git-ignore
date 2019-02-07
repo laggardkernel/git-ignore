@@ -15,6 +15,7 @@ XDG_DATA_HOME="${XDG_DATA_HOME:=$HOME/.local/share}"
 # Define default confs.
 typeset -g GI_TEMPLATE="${GI_TEMPLATE:=$XDG_DATA_HOME/git-ignore}"
 typeset -gA GI_OPTS
+: "${GI_OPTS[version]=1.2.0}"
 : "${GI_OPTS[script]="${0##*/}"}"
 : "${GI_OPTS[template]:=$GI_TEMPLATE}"
 
@@ -50,8 +51,8 @@ EOF
 }
 
 _gitignore_version() {
-  echo "${GI_OPTS[script]} 1.1.0 by laggardkernel <laggardkernel@gmail.com>"
-  echo "https://github.com/laggardkernel/git-ignore"
+  echo "${GI_OPTS[script]} ${GI_OPTS[version]} by laggardkernel <laggardkernel@gmail.com>"
+  echo "https://github.com/laggardkernel/git-ignore/blob/master/CHANGELOG.md"
 }
 
 _gitignore_info() { printf "%b[Info]%b %s\\n" '\e[0;32m' '\e[0m' "$@" >&2; }
