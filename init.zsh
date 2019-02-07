@@ -14,5 +14,5 @@
 # Define default confs.
 export GI_TEMPLATE="${0:h}/.git-ignore"
 
-path+=("${0:h}/bin" "${path[@]}")
-fpath+=("${path[@]}" "${0:h}/functions")
+path=("${0:h}/bin" "${path[@]}")
+fpath=("${0:h}/functions" "${fpath[@]}")
