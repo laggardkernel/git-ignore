@@ -63,7 +63,7 @@ _gitignore_update() {
     (cd "${GI_OPTS[template]}" && git pull --no-rebase --ff) || return 1
   else
     _gitignore_info 'Initializing gitignore repo...'
-    git clone --depth=1 https://github.com/dvcs/gitignore.git "${GI_OPTS[template]}"
+    git clone --depth=1 https://github.com/denis230v/gitignore.git "${GI_OPTS[template]}"
   fi
 }
 
